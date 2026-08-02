@@ -19,12 +19,17 @@ export async function POST() {
   const { data: profile } = await supabase
     .from("profiles").select("cv_summary, headline, country, embedding").eq("id", user.id).single();
 
+  const { data: dismissed } = await supabase
+    .from("dismissed_jobs").select("apply_url").eq("user_id", user.id);
+  const dismissedUrls = new Set((dismissed ?? []).map(d => d.apply_url));
+
   if (!preferences?.target_roles?.length) {
     return NextResponse.json({ error: "Configura tus roles de búsqueda en /onboarding primero" }, { status: 400 });
   }
 
   let excludedByVisa = 0;
   let excludedByRelevance = 0;
+  let excludedByDismissed = 0;
   const errors: string[] = [];
 
   // --- Paso 1: recolectar candidatos válidos de todas las fuentes ---
@@ -49,6 +54,7 @@ export async function POST() {
         if (!capper.canAcceptMore()) break;
         if (!job.apply_url || !job.role || !job.company) continue;
         if (deduper.isDuplicate(job.apply_url)) continue;
+        if (dismissedUrls.has(job.apply_url)) { excludedByDismissed++; continue; }
 
         const jobText = `${job.role} ${job.description}`;
         if (!isRelevantForRole(jobText, role)) { excludedByRelevance++; continue; }
@@ -132,7 +138,7 @@ export async function POST() {
   }
 
   return NextResponse.json({
-    inserted, excludedByVisa, excludedByRelevance, updatedScores, bySource, errors,
+    inserted, excludedByVisa, excludedByRelevance, excludedByDismissed, updatedScores, bySource, errors,
     usingEmbeddings: !!profileEmbedding,
   });
 }

@@ -115,8 +115,9 @@ export default function TrackerBoard({
     const sourceInfo = data.bySource ? Object.entries(data.bySource).map(([s, n]) => `${s}: ${n}`).join(", ") : "";
     const visaInfo = data.excludedByVisa ? ` — 🛂 ${data.excludedByVisa} descartadas por visa` : "";
     const relevanceInfo = data.excludedByRelevance ? ` — 🎯 ${data.excludedByRelevance} descartadas por no ser relevantes` : "";
+    const dismissedInfo = data.excludedByDismissed ? ` — 🗑 ${data.excludedByDismissed} ya las habías eliminado antes` : "";
     const errorInfo = data.errors?.length ? ` — ⚠️ ${data.errors.length} errores (revisa la terminal)` : "";
-    setNotice(`Se agregaron ${data.inserted} ofertas nuevas. ${sourceInfo}${visaInfo}${relevanceInfo}${errorInfo}`);
+    setNotice(`Se agregaron ${data.inserted} ofertas nuevas. ${sourceInfo}${visaInfo}${relevanceInfo}${dismissedInfo}${errorInfo}`);
     const r2 = await fetch("/api/applications");
     const d2 = await r2.json();
     if (d2.applications) setApps(d2.applications);
@@ -241,10 +242,11 @@ export default function TrackerBoard({
               }}>⬇ Descargar CV en PDF</button>
             )}
             {app.cover_letter && (
-              <button onClick={() => setOpenLetterId(openLetterId === app.id ? null : app.id)} style={{
-                fontFamily: "monospace", fontSize: 11, color: "#8ba396", background: "none",
+              <a href={`/api/letter-download/${app.id}`} download style={{
+                fontFamily: "monospace", fontSize: 11, color: "#4fb3a9", background: "none",
                 border: "1px solid #2a352f", borderRadius: 6, padding: "5px 10px", cursor: "pointer",
-              }}>{openLetterId === app.id ? "Ocultar carta" : "Ver carta"}</button>
+                textDecoration: "none",
+              }}>⬇ Descargar carta PDF</a>
             )}
             {app.ats_report && (
               <button onClick={() => setOpenAtsId(openAtsId === app.id ? null : app.id)} style={{
@@ -356,13 +358,6 @@ export default function TrackerBoard({
                 </div>
               )}
             </div>
-          )}
-
-          {openLetterId === app.id && app.cover_letter && (
-            <div style={{
-              fontSize: 12.5, lineHeight: 1.6, whiteSpace: "pre-wrap", background: "#0f1512",
-              border: "1px solid #2a352f", borderRadius: 8, padding: 14, marginTop: 8,
-            }}>{app.cover_letter}</div>
           )}
 
           <div style={{ display: "flex", justifyContent: "space-between", marginTop: 12, gap: 10, flexWrap: "wrap" }}>

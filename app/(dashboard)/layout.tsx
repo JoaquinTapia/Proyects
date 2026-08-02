@@ -11,9 +11,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
     .from("profiles").select("full_name").eq("id", user.id).single();
 
   return (
-    <div style={{ display: "flex", height: "100vh", overflow: "hidden" }}>
+    <div style={{ display: "flex", height: "100dvh", overflow: "hidden" }}>
       <Sidebar userLabel={profile?.full_name || user.email || ""} />
-      <div style={{ flex: 1, overflowY: "auto", height: "100vh" }}>{children}</div>
+      <div style={{ flex: 1, overflowY: "auto", height: "100dvh" }}>{children}</div>
     </div>
   );
 }

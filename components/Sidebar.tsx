@@ -33,8 +33,9 @@ export default function Sidebar({ userLabel }: { userLabel: string }) {
       onMouseLeave={() => setExpanded(false)}
       style={{
         width: expanded ? EXPANDED_WIDTH : COLLAPSED_WIDTH,
-        minHeight: "100vh", background: "#161d19", borderRight: "1px solid #2a352f",
-        display: "flex", flexDirection: "column", padding: "24px 12px", flexShrink: 0,
+        height: "100dvh", background: "#161d19", borderRight: "1px solid #2a352f",
+        display: "flex", flexDirection: "column", padding: "24px 12px 20px",
+        boxSizing: "border-box", flexShrink: 0,
         transition: "width 0.22s cubic-bezier(0.4, 0, 0.2, 1)",
         overflow: "hidden", position: "sticky", top: 0,
       }}
@@ -71,7 +72,8 @@ export default function Sidebar({ userLabel }: { userLabel: string }) {
 
       <button onClick={handleLogout} title="Cerrar sesión" style={{
         background: "transparent", border: "1px solid #2a352f", color: "#8ba396",
-        borderRadius: 8, padding: "10px", cursor: "pointer", fontSize: 13, marginTop: 12,
+        borderRadius: 8, padding: "10px", cursor: "pointer", fontSize: 13,
+        marginTop: 12, marginBottom: 4, minHeight: 40, flexShrink: 0,
         whiteSpace: "nowrap", display: "flex", alignItems: "center", gap: 10,
       }}>
         <span style={{ fontSize: 15, flexShrink: 0 }}>🚪</span>
