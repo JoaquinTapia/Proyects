@@ -70,14 +70,12 @@ export default function Sidebar({ userLabel }: { userLabel: string }) {
       </nav>
 
       <button onClick={handleLogout} title="Cerrar sesión" style={{
-        position: "fixed", bottom: 16, left: 16, zIndex: 50,
-        background: "#161d19", border: "1px solid #2a352f", color: "#8ba396",
-        borderRadius: 8, padding: "10px 14px", cursor: "pointer", fontSize: 13,
-        whiteSpace: "nowrap", display: "flex", alignItems: "center", gap: 8,
-        boxShadow: "0 4px 14px rgba(0,0,0,0.4)",
+        background: "transparent", border: "1px solid #2a352f", color: "#8ba396",
+        borderRadius: 8, padding: "10px", cursor: "pointer", fontSize: 13, marginTop: 12,
+        whiteSpace: "nowrap", display: "flex", alignItems: "center", gap: 10,
       }}>
-        <span style={{ fontSize: 15 }}>🚪</span>
-        <span>Cerrar sesión</span>
+        <span style={{ fontSize: 15, flexShrink: 0 }}>🚪</span>
+        {expanded && <span>Cerrar sesión</span>}
       </button>
     </div>
   );

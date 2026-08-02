@@ -50,6 +50,24 @@ export default function TrackerBoard({
   const [newEventType, setNewEventType] = useState("seguimiento");
   const [newEventDate, setNewEventDate] = useState(new Date().toISOString().slice(0, 10));
   const [newEventNotes, setNewEventNotes] = useState("");
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+
+  function toggleSelect(id: string) {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  }
+
+  async function handleBulkDelete() {
+    if (selectedIds.size === 0) return;
+    if (!confirm(`¿Eliminar ${selectedIds.size} postulación(es) seleccionadas?`)) return;
+    const ids = Array.from(selectedIds);
+    setApps(prev => prev.filter(a => !selectedIds.has(a.id)));
+    setSelectedIds(new Set());
+    await Promise.all(ids.map(id => fetch(`/api/applications/${id}`, { method: "DELETE" })));
+  }
 
   async function loadEvents(id: string) {
     const res = await fetch(`/api/applications/${id}/events`);
@@ -160,6 +178,12 @@ export default function TrackerBoard({
           fontFamily: "monospace", fontSize: 13, padding: "9px 16px", borderRadius: 8,
           background: "#4fb3a9", color: "#08211d", border: "none", cursor: "pointer", fontWeight: 700,
         }}>{searching ? "Buscando…" : "🔍 Buscar ofertas nuevas"}</button>
+        {selectedIds.size > 0 && (
+          <button onClick={handleBulkDelete} style={{
+            fontFamily: "monospace", fontSize: 13, padding: "9px 16px", borderRadius: 8,
+            background: "#c1595a", color: "#fff", border: "none", cursor: "pointer", fontWeight: 700,
+          }}>🗑 Eliminar seleccionadas ({selectedIds.size})</button>
+        )}
         {notice && <span style={{ fontSize: 12, color: "#8ba396" }}>{notice}</span>}
       </div>
 
@@ -187,9 +211,13 @@ export default function TrackerBoard({
           padding: "18px 20px", marginBottom: 12,
         }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-            <div>
-              <p style={{ fontWeight: 700, margin: 0, fontSize: 16 }}>{app.job_postings.role}</p>
-              <div style={{ color: "#8ba396", fontSize: 13 }}>{app.job_postings.company}</div>
+            <div style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+              <input type="checkbox" checked={selectedIds.has(app.id)} onChange={() => toggleSelect(app.id)}
+                style={{ marginTop: 4, width: 16, height: 16, cursor: "pointer", accentColor: "#d8a33d" }} />
+              <div>
+                <p style={{ fontWeight: 700, margin: 0, fontSize: 16 }}>{app.job_postings.role}</p>
+                <div style={{ color: "#8ba396", fontSize: 13 }}>{app.job_postings.company}</div>
+              </div>
             </div>
             <StarRating score={app.match_score} />
           </div>
