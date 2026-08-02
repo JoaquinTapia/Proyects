@@ -2,7 +2,7 @@
 // Es un cálculo simple por superposición de palabras clave (no usa IA, así que es gratis
 // y rápido) — sirve como un primer filtro visual antes de decidir generar el CV con Claude.
 
-import { cosineSimilarity } from "./embeddings";
+import { cosineSimilarity } from "../embeddings";
 
 /**
  * Versión "robusta" del match usando embeddings (similitud semántica real, no solo
